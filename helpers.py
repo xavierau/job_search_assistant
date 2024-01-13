@@ -29,11 +29,13 @@ def init_session_vars():
 
 
 def execute_functions(_tools, function_calls):
+    print("function_calls: ", function_calls)
     funcs = {t.get("name"): t.get("func") for t in _tools}
     for function_call in function_calls:
         func = funcs.get(function_call.get('name'))
         if func:
             append_function_call_response(function_call)
+            print("function_args: ", function_call.get('arguments'))
             func_args = json.loads(function_call.get('arguments'))
             func_result = func(**func_args)
             append_tool_response(function_call, func_result)
@@ -43,20 +45,19 @@ def execute_functions(_tools, function_calls):
 
 
 def update_function_calls(tool_calls, function_calls=[], message_placeholder=None):
-    for i, call in enumerate(tool_calls):
-        for j in range(i - len(function_calls) + 1):
-            function_calls.append({
-                "id": None,
-                "name": None,
-                "arguments": ""
-            })
+    print("tool_calls: ", tool_calls)
+    tool_call = tool_calls[0]
 
-        if tool_calls[i].function.name:
-            function_name = tool_calls[i].function.name
-            function_calls[i]['id'] = tool_calls[i].id
-            function_calls[i]['name'] = function_name
-            message_placeholder.text(f"Calling plugin: {function_name}" + " ▌")
-        function_calls[i]['arguments'] += tool_calls[i].function.arguments
+    if tool_call.id:
+        function_calls.append({
+            "id": tool_call.id,
+            "name": tool_call.function.name,
+            "arguments": ""
+        })
+        message_placeholder.text(f"Calling plugin: {tool_call.function.name}" + " ▌")
+    else:
+        function_call = function_calls[-1]
+        function_call['arguments'] += tool_call.function.arguments
 
     return function_calls
 

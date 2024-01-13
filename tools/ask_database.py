@@ -45,6 +45,9 @@ def ask_database(what: str, where: str = None, salary_min: str = None, salary_ma
     app_id = os.getenv("ADZUNA_APP_ID")
     app_key = os.getenv("ADZUNA_APP_KEY")
 
+    print('app_id:', app_id)
+    print('app_key:', app_key)
+
     base_url = "https://api.adzuna.com/v1/api/jobs/gb/search/1?"
 
     queries = {
@@ -77,6 +80,8 @@ def ask_database(what: str, where: str = None, salary_min: str = None, salary_ma
     print("query_string:", query_string)
 
     response = requests.get(base_url + query_string, headers={"Content-Type": "application/json"})
+
+    print("response: ", response)
 
     jobs = [_parse_json(job) for job in response.json()["results"]]
 
