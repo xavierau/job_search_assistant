@@ -13,6 +13,9 @@ def stows(s):
 
 
 def init_session_vars():
+    if "is_loading" not in streamlit.session_state:
+        streamlit.session_state.is_loading = False
+
     if "track_state" not in streamlit.session_state:
         streamlit.session_state.track_state = datetime.now()
 

@@ -49,7 +49,10 @@ for message in messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("How can I assist you?",
+                           disabled=st.session_state.is_loading or st.session_state.openai_api_key is None):
+    st.session_state.is_loading = True
+
     messages.append({"role": "user", "content": prompt})
 
     with st.chat_message("user"):
@@ -63,4 +66,5 @@ if prompt := st.chat_input("What is up?"):
 
         message_placeholder.markdown(full_response)
 
+    st.session_state.is_loading = False
     messages.append({"role": "assistant", "content": full_response})
