@@ -1,4 +1,5 @@
-from config import Config
+import streamlit
+
 from helpers import stows
 from llm.generate import generate
 
@@ -27,7 +28,7 @@ cover_letter_writer_schema = {
 
 def cover_letter_writer(job_title: str,
                         job_description: str, ):
-    user_info_dict = Config.get_instance().get_config("user_profile", {})
+    user_info_dict = streamlit.session_state.user_profile
 
     system_prompt = f""" You are a great cover letter writer. Following principles will help you to write a great cover letter.
         1. Focus it on the future. 
@@ -58,10 +59,9 @@ def cover_letter_writer(job_title: str,
     ]
 
     content = ""
-    for response in generate(model=Config.get_instance().get_config("openai_model", None),
+    for response in generate(model=streamlit.session_state.openai_model,
                              messages=messages,
-                             openai_api_key=Config.get_instance().get_config("openai_api_key", None)):
-
+                             openai_api_key=streamlit.session_state.openai_api_key):
         if len(response) > 0:
             content += response[0].delta.content or ""
 

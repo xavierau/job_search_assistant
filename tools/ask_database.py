@@ -1,4 +1,6 @@
 import os
+
+import streamlit
 from dotenv import load_dotenv
 
 import requests
@@ -86,12 +88,12 @@ def ask_database(what: str, where: str = None, salary_min: str = None, salary_ma
 
 def _parse_json(data):
     return {
-        "job_title": data["title"],
-        "category": data["category"]["label"],
-        "location": data["location"]["display_name"],
-        "published_date": data["created"],
-        "job_duties": data["description"],
-        "company": data["company"]["display_name"],
-        "url": data["redirect_url"],
-        "salary_is_predicted": data["salary_is_predicted"],
+        "job_title": data.get("title", "No title"),
+        "category": data.get("category", {}).get("label", "No category"),
+        "location": data.get("location", {}).get("display_name", "No location"),
+        "published_date": data.get("created", "No date"),
+        "job_duties": data.get("description", "Nod description"),
+        "company": data.get("company", {}).get("display_name", "No company name"),
+        "url": data.get("redirect_url", "No url"),
+        "salary_is_predicted": data.get("salary_is_predicted", "1"),
     }

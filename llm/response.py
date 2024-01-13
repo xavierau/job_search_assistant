@@ -1,10 +1,10 @@
 import json
 
-from config import AppState
+import streamlit
 
 
 def append_function_call_response(function_call_response):
-    messages = AppState.get_instance().get_state("messages", [])
+    messages = streamlit.session_state.messages or []
 
     messages.append({
         "content": "",
@@ -21,7 +21,7 @@ def append_function_call_response(function_call_response):
 
 
 def append_tool_response(function_call_response, func_result):
-    messages = AppState.get_instance().get_state("messages", [])
+    messages = streamlit.session_state.messages or []
 
     messages.append({
         "role": "tool",

@@ -1,15 +1,10 @@
-import json
-
 import streamlit as st
 
-from config import Config, AppState
 from helpers import init_session_vars, call
 from layouts.init_sidebar import init_sidebar
 from layouts.init_user_profile_management import init_user_profile_management
-from llm.generate import generate
 
 from llm.prompts import update_system_prompt_when_profile_changed
-from llm.response import append_function_call_response, append_tool_response
 from tools.ask_database import ask_database, ask_database_schema
 from tools.cover_letter_writer import cover_letter_writer, cover_letter_writer_schema
 from tools.feature_job import feature_job, feature_job_schema
@@ -36,7 +31,8 @@ tools = [
 
 # setup layout
 st.title("Job Search Assistant")
-st.write("You can ask the assistant to find jobs in UK for you and then you ask the assistant to create a cover letter for the job!")
+st.write(
+    "You can ask the assistant to find jobs in UK for you and then you ask the assistant to create a cover letter for the job!")
 
 user_profile_management = st.expander("User Profile")
 init_user_profile_management(user_profile_management, update_system_prompt_when_profile_changed)
@@ -45,8 +41,8 @@ sidebar = st.sidebar
 init_sidebar(sidebar)
 
 # setup states
-user_profile = Config.get_instance().get_config("user_profile", {})
-messages = AppState.get_instance().get_state("messages", [])
+user_profile = st.session_state.user_profile
+messages = st.session_state.messages
 
 for message in messages:
     if (message["role"] == "assistant" or message["role"] == "user") and message["content"]:

@@ -1,6 +1,8 @@
 import json
+from datetime import datetime
 
-from config import AppState, Config
+import streamlit
+
 from llm.generate import generate
 from llm.prompts import get_default_system_prompt
 from llm.response import append_function_call_response, append_tool_response
@@ -11,21 +13,26 @@ def stows(s):
 
 
 def init_session_vars():
-    if AppState.get_instance().length() == 0:
-        AppState.get_instance().set({
-            "featured_jobs": [],
-            "messages": [{
-                "role": "system",
-                "content": get_default_system_prompt()
-            }],
-        })
+    if "track_state" not in streamlit.session_state:
+        streamlit.session_state.track_state = datetime.now()
 
-    if Config.get_instance().length() == 0:
-        Config.get_instance().set({
-            "openai_model": "gpt-3.5-turbo-1106",
-            "openai_api_key": None,
-            "user_profile": {},
-        })
+    if "featured_jobs" not in streamlit.session_state:
+        streamlit.session_state.featured_jobs = []
+
+    if "messages" not in streamlit.session_state:
+        streamlit.session_state.messages = [{
+            "role": "system",
+            "content": get_default_system_prompt()
+        }]
+
+    if "openai_model" not in streamlit.session_state:
+        streamlit.session_state.openai_model = "gpt-3.5-turbo-1106"
+
+    if "openai_api_key" not in streamlit.session_state:
+        streamlit.session_state.openai_api_key = None
+
+    if "user_profile" not in streamlit.session_state:
+        streamlit.session_state.user_profile = {}
 
 
 def execute_functions(_tools, function_calls):
@@ -67,9 +74,9 @@ def update_outputs(response, msg, mp):
 
 def call(messages, tools, message_placeholder, response_message="", function_calls=[]):
     for response in generate(
-            model=Config.get_instance().get_config("openai_model"),
+            model=streamlit.session_state.openai_model,
             messages=messages,
-            openai_api_key=Config.get_instance().get_config("openai_api_key"),
+            openai_api_key=streamlit.session_state.openai_api_key,
             tools=[t.get("schema") for t in tools]):
         if len(response) > 0:
             if response[0].finish_reason == 'tool_calls':

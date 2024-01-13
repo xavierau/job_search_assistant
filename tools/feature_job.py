@@ -1,7 +1,4 @@
-import time
-from typing import Any, List
-
-from config import AppState
+import streamlit
 
 feature_job_schema = {
     "type": "function",
@@ -27,7 +24,7 @@ feature_job_schema = {
 
 
 def feature_job(job_name: str, job_url: str):
-    AppState.get_instance().append("featured_jobs", {
+    streamlit.session_state.featured_jobs.append({
         "name": job_name,
         "url": job_url
     })

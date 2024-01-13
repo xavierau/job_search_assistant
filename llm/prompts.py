@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from config import Config, AppState
+import streamlit
 
 
 def get_default_system_prompt():
@@ -21,21 +21,21 @@ def get_default_system_prompt():
     
     Current date, time and weekday:{datetime.now().strftime("%A, %d. %B %Y %I:%M%p")}
     """
-
-    if len(Config.get_instance().get_config("user_profile", {}).items()) > 0:
+    user_profile = streamlit.session_state.user_profile if "user_profile" in streamlit.session_state else {}
+    if len(user_profile.items()) > 0:
         def sanitize_key(key):
             return key.replace("_", " ").title()
 
         user_info = "\n".join(
-            [f"{sanitize_key(key)}: {value}" for key, value in
-             Config.get_instance().get_config("user_profile", {}).items()])
+            [f"{sanitize_key(key)}: {value}" for key, value in user_profile.items()])
         content += f"\nUser personal info:\n{user_info}"
 
     return content
 
 
 def update_system_prompt_when_profile_changed():
-    messages = AppState.get_instance().get_state("messages")
+
+    messages = streamlit.session_state.messages
 
     if isinstance(messages, list) and len(messages) > 0:
         first_message = messages[0]

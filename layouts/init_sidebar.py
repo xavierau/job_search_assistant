@@ -1,4 +1,4 @@
-from config import Config, AppState
+import streamlit
 
 
 def update_openai_config(sidebar):
@@ -13,7 +13,7 @@ def update_openai_config(sidebar):
 
 
 def show_saved_jobs(sidebar):
-    featured_jobs = AppState.get_instance().get_state("featured_jobs", [])
+    featured_jobs = streamlit.session_state.featured_jobs
 
     for featured_job in featured_jobs or []:
         print("featured job: ", featured_job)
@@ -29,10 +29,10 @@ def init_sidebar(sidebar):
     openai_api_model, openai_api_key = update_openai_config(sidebar)
 
     if sidebar.button("Update Config"):
-        Config.get_instance().set_config("openai_api_key", openai_api_key)
-        Config.get_instance().set_config("openai_model", openai_api_model)
+        streamlit.session_state.openai_api_key = openai_api_key
+        streamlit.session_state.openai_model = openai_api_model
 
-    user_profile = Config.get_instance().get_config("user_profile", {})
+    user_profile = streamlit.session_state.user_profile or {}
     current_user = f"{user_profile.get('first_name')} {user_profile.get('last_name')}" if user_profile.items() else "default user"
     sidebar.write(f"<small>Current user: {current_user}<small>", unsafe_allow_html=True)
     sidebar.title("Saved Jobs")
